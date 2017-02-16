@@ -3,7 +3,8 @@ import json
 
 from cornice import Service
 
-from pyramid.security import authenticated_userid, Everyone
+from pyramid.security import (
+    authenticated_userid, Everyone, NO_PERMISSION_REQUIRED)
 from pyramid.httpexceptions import (
     HTTPNotFound, HTTPBadRequest, HTTPForbidden, HTTPServerError, HTTPNoContent)
 from sqlalchemy import Unicode
@@ -102,7 +103,7 @@ def get_extracts(request):
         discussion, view_def, ids, authenticated_userid(request))
 
 
-@extracts.post()
+@extracts.post(permission=NO_PERMISSION_REQUIRED)
 def post_extract(request):
     """
     Create a new extract.
@@ -198,7 +199,7 @@ def post_extract(request):
     return {'ok': True, '@id': new_extract.uri()}
 
 
-@extract.put()
+@extract.put(permission=NO_PERMISSION_REQUIRED)
 def put_extract(request):
     """
     Updating an Extract
