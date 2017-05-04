@@ -71,7 +71,7 @@ Raw sql connection
 Updating supervisord.conf file
 ------------------------------
 
-If you require to update, improve or otherwise add more commands for supervisor to manage, you must affect change in the tempate
+If you require to update, improve or otherwise add more commands for supervisor to manage, you must affect change in the template
 file instead. There are several key variables that are propagated to the `local.ini` file from the supervisord
 configuration. To affect change, make sure to do the following.
 
