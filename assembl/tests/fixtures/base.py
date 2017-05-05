@@ -115,6 +115,27 @@ def test_webrequest(request, test_app_no_perm):
     return req
 
 
+@pytest.fixture(scope="function")
+def test_webrequest_discussion(request, discussion, test_app_no_perm):
+    """A Pyramid request fixture with no user authorized on a
+    discussion"""
+    slug = discussion.slug
+    req = PyramidWebTestRequest.blank('/%s' % (slug), method="GET")
+    req.matchdict = {'discussion_slug': slug}
+
+    def fin():
+        print "finalizer test_webrequest"
+        # The request was not called
+        manager.pop()
+    request.addfinalizer(fin)
+    return req
+
+
+@pytest.fixture(scope="function")
+def en_localizer(request, discussion):
+    pass
+
+
 @pytest.fixture(scope="module")
 def db_default_data(
         request, db_tables, base_registry):
@@ -230,6 +251,7 @@ def test_app_no_login(request, test_app_no_perm):
 
     return test_app_no_perm
 
+
 @pytest.fixture(scope="function")
 def test_app_no_login_real_policy(request, test_app_no_perm):
     """A configured Assembl fixture with permissions
@@ -246,7 +268,7 @@ def test_app_no_login_real_policy(request, test_app_no_perm):
     auth_policy_name = "assembl.auth.util.UpgradingSessionAuthenticationPolicy"
     auth_policy = resolver.resolve(auth_policy_name)(
         callback=authentication_callback)
-    
+
     config.set_authorization_policy(ACLAuthorizationPolicy())
     config.set_authentication_policy(auth_policy)
 
@@ -274,8 +296,10 @@ def test_server(request, test_app, empty_db):
     request.addfinalizer(fin)
     return server
 
+
 @pytest.fixture(scope="function")
-def test_server_no_login_real_policy(request, test_app_no_login_real_policy, empty_db):
+def test_server_no_login_real_policy(request, test_app_no_login_real_policy,
+                                     empty_db):
     """A uWSGI server fixture with permissions, and no user logged in"""
 
     server = WSGIServer(application=test_app_no_login_real_policy.app)

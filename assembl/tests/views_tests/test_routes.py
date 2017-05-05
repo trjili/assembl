@@ -303,3 +303,8 @@ def test_route_admin_permission_edit(discussion, test_app):
     route = "/admin/permissions/discussion/%d" % (discussion_id,)
     resp = test_app.get(route)
     assert resp.status_int == 200
+
+
+def test_route_in_account_confirmation_email(test_app,
+                                             test_webrequest_discussion):
+    print "testing"

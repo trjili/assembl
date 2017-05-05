@@ -1047,11 +1047,10 @@ def finish_password_change(request):
         title=title, token=token, error=error)
 
 
-def send_confirmation_email(request, email):
-    mailer = get_mailer(request)
-    localizer = request.localizer
+def compile_confirmation_email(localizer, email, url, route_maker):
     confirm_what = localizer.translate(_('email'))
-    subject = localizer.translate(_("Please confirm your {confirm_what} with {assembl}"))
+    subject = localizer.translate(
+        _("Please confirm your {confirm_what} with {assembl}"))
     if isinstance(email.profile, User) and not email.profile.verified:
         confirm_what = localizer.translate(_('account'))
         text_message = localizer.translate(_(u"""Hello, {name}, and welcome to {assembl}!
@@ -1079,14 +1078,14 @@ on your {assembl} account.</p>
 <p>Best regards,<br />The {assembl} Team</p>"""))
 
     from assembl.auth.password import email_token
+    full_path = url + route_maker('user_confirm_email',
+                                  token=email_token(email))
     data = dict(
         name=email.profile.name,
         email=email.email,
         assembl="Assembl",
         confirm_what=confirm_what,
-        confirm_url=maybe_contextual_route(
-            request, 'user_confirm_email',
-            token=email_token(email))
+        confirm_url=full_path
     )
     message = Message(
         subject=subject.format(**data),
@@ -1094,20 +1093,19 @@ on your {assembl} account.</p>
         recipients=["%s <%s>" % (email.profile.name, email.email)],
         body=text_message.format(**data),
         html=html_message.format(**data))
-    mailer.send(message)
+
+    return message
 
 
-def send_change_password_email(
-        request, profile, email=None, subject=None,
-        text_body=None, html_body=None, discussion=None,
-        sender_name=None, welcome=False):
-    mailer = get_mailer(request)
-    localizer = request.localizer
-    route_maker = create_get_route(request, discussion)
+def compile_change_password_email(localizer, url, route_maker,
+                                  profile, email=None,
+                                  subject=None, text_body=None,
+                                  html_body=None, discussion=None,
+                                  sender_name=None, welcome=False):
     data = dict(
         assembl="Assembl", name=profile.name,
-        confirm_url=request.host_url + route_maker(
-            'welcome' if welcome else 'do_password_change',
+        confirm_url=url + route_maker(
+            'welcome' if welcome else 'react_do_password_change',
             token=password_change_token(profile)))
     sender_email = config.get('assembl.admin_email')
     if discussion:
@@ -1150,4 +1148,29 @@ The {assembl} Team
         recipients=["%s <%s>" % (
             profile.name, email or profile.get_preferred_email())],
         body=text_body.format(**data), html=html_body.format(**data))
+    return message
+
+
+def send_confirmation_email(request, email):
+    mailer = get_mailer(request)
+    localizer = request.localizer
+    discussion = discussion_from_request(request)
+    url = request.host_url
+    route_maker = create_get_route(request, discussion)
+    message = compile_confirmation_email(localizer, email, url, route_maker)
+    mailer.send(message)
+
+
+def send_change_password_email(
+        request, profile, email=None, subject=None,
+        text_body=None, html_body=None, discussion=None,
+        sender_name=None, welcome=False):
+    mailer = get_mailer(request)
+    localizer = request.localizer
+    route_maker = create_get_route(request, discussion)
+    url = request.host_url
+    message = compile_change_password_email(
+        localizer, url, route_maker, profile, email, subject, text_body,
+        html_body, discussion, sender_name,
+        welcome)
     mailer.send(message)
