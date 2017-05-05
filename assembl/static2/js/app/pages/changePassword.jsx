@@ -3,7 +3,7 @@
 import React from 'react';
 import { Grid, Col, FormGroup, FormControl, Button } from 'react-bootstrap';
 import { Translate, I18n } from 'react-redux-i18n';
-import { getAuthorizationToken } from '../utils/globalFunctions';
+import { getAuthorizationToken, getDiscussionSlug } from '../utils/globalFunctions';
 import { postChangePassword } from '../services/authenticationService';
 import inputHandler from '../utils/inputHandler';
 import { get } from '../utils/routeMap';
@@ -16,7 +16,7 @@ class ChangePassword extends React.Component {
     this.submitForm = this.submitForm.bind(this);
 
     this.state = {
-      token: getAuthorizationToken()
+      token: getAuthorizationToken(this.props.location)
     };
   }
 
@@ -29,14 +29,18 @@ class ChangePassword extends React.Component {
     const payload = this.state;
     const that = this;
     postChangePassword(payload).then(() => {
-      const slug = that.props.params.slug;
+      const slug = getDiscussionSlug();
+      let route, url;
       if (slug) {
-        const route = `/${get('home', { slug: slug })}`;
-        const url = new URL(route, window.location.href);
+        route = `/${get('home', { slug: slug })}`;
+        url = new URL(route, that.props.location.origin);
         window.location = url;
       }
-      // Get a slug, reload to the home_view
-      // If no slug, go to forbidden page...
+      else {
+        route = `/${get('root')}`;
+        url = new URL(route, that.props.location.origin);
+        window.location = url;
+      }
     })
     .catch((error) => {
       let msg;
@@ -47,8 +51,8 @@ class ChangePassword extends React.Component {
         }
       } else {
         try {
-          const resp = JSON.parse(error);
-          displayAlert('danger', resp.error.type, true);
+          const firstError = error[0];
+          displayAlert('danger', firstError.message, true);
         } catch (exception) {
           msg = I18n.t('login.somethingWentWrong');
           displayAlert('danger', msg, true);

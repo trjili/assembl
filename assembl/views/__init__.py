@@ -156,6 +156,8 @@ def get_provider_data(get_route, providers=None):
 def create_get_route(request, discussion=None):
     if discussion:
         def get_route(name, **kwargs):
+            if name == "bare_slug":
+                name = "new_home" if discussion.preferences['landing_page'] else "home"
             try:
                 return request.route_path('contextual_' + name,
                                           discussion_slug=discussion.slug,
@@ -410,21 +412,37 @@ def get_template_views():
 
 
 class JSONError(HTTPException):
-    content_type = 'text/plain'
 
-    def __init__(self, code, detail=None, headers=None, comment=None,
+    def __init__(self, detail=None, error_type=None,
+                 code=HTTPBadRequest.code, headers=None, comment=None,
                  body_template=None, **kw):
-        self.code = code
-        self.content_type = 'text/plain'
+        # error_type should be from .errors.ErrorTypes
+        self.errors = []
+        if detail:
+            self.add_error(detail, error_type)
         super(JSONError, self).__init__(
-            detail, headers, comment,
-            body='{"error":%s, "status":%d}' % (
-                json.dumps(detail), code), **kw)
+            detail, headers, comment, **kw)
 
-        def prepare(self, environ):
-            r = super(JSONError, self).prepare(environ)
-            self.content_type = 'text/plain'
-            return r
+    @staticmethod
+    def create_dict(message, error_type=None):
+        if error_type:
+            return dict(message=message, type=error_type.name)
+        return dict(message=message)
+
+    def add_error(self, message, error_type=None, code=None):
+        self.errors.append(self.create_dict(message, error_type))
+        if code is not None:
+            self.code = code
+
+    def __nonzero__(self):
+        return bool(self.errors)
+
+
+@view_config(context=JSONError, renderer='json')
+def json_error_view(request):
+    exc = request.exception
+    request.response.status_code = exc.code
+    return exc.errors
 
 
 # TODO social.auth: Test the heck out of this.
@@ -474,9 +492,6 @@ def redirector(request):
     return HTTPMovedPermanently(request.route_url(
         'home', discussion_slug=request.matchdict.get('discussion_slug')))
 
-
-def is_using_new_frontend():
-    return config.get('new_frontend', False)
 
 def includeme(config):
     """ Initialize views and renderers at app start-up time. """
