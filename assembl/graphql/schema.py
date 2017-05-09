@@ -1,4 +1,6 @@
 from datetime import datetime
+import mimetypes
+import os.path
 from random import sample as random_sample
 
 from sqlalchemy import desc
@@ -441,7 +443,9 @@ class Thematic(SecureObjectType, SQLAlchemyObjectType):
             'https://framapic.org/3CL5o6dir9Vk/xQ0Uckbi7ckp.jpg',
             'https://framapic.org/cKULJ8P6VLFr/Nojx87ovxtjC.jpg'
         ]
-        # TODO imgUrl
+        if self.attachments:
+            return self.attachments[0].external_url
+
         return random_sample(images, 1)[0]
 
 
@@ -511,6 +515,13 @@ class QuestionInput(graphene.InputObjectType):
     title_entries = graphene.List(LangStringEntryInput, required=True)
 
 
+# How the file upload works
+# With the https://github.com/jaydenseric/apollo-upload-client
+# networkInterface, if there is a File object in a graphql variable, the File data
+# is appended to the POST body as a part with an identifier, the identifier
+# is set in the variable instead which reference this part.
+# So here image input field is a simple String,
+# which is the identifier of the FileUpload object you will find in context.POST
 class CreateThematic(graphene.Mutation):
     class Input:
         # Careful, having required=True on a graphene.List only means
@@ -520,7 +531,7 @@ class CreateThematic(graphene.Mutation):
         identifier = graphene.String(required=True)
         video = graphene.Argument(VideoInput)
         questions = graphene.List(QuestionInput)
-        # TODO upload img example http://docs.pylonsproject.org/projects/pyramid-cookbook/en/latest/forms/file_uploads.html
+        image = graphene.String()  # this is the identifier of the part in a multipart POST
 
     thematic = graphene.Field(lambda: Thematic)
 
@@ -595,6 +606,29 @@ class CreateThematic(graphene.Mutation):
             root_thematic.children.append(saobj)
             db = saobj.db
             db.add(saobj)
+
+            # add uploaded image as an attachment to the idea
+            image = args.get('image')
+            if image is not None:
+                filename = os.path.basename(context.POST[image].filename)
+                mime_type = mimetypes.guess_type(filename)[0]
+                uploaded_file = context.POST[image].file
+                uploaded_file.seek(0)
+                data = uploaded_file.read()
+                document = models.File(
+                    discussion=discussion,
+                    mime_type=mime_type,
+                    title=filename,
+                    data=data)
+                attachment = models.IdeaAttachment(
+                    document=document,
+                    idea=saobj,
+                    discussion=discussion,
+                    creator_id=context.authenticated_userid,
+                    title=filename,
+                    attachmentPurpose="EMBED_ATTACHMENT"
+                )
+
             db.flush()
 
             questions_input = args.get('questions')
