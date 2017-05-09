@@ -188,7 +188,11 @@ const Translations = {
       edition: 'Discussion',
       landingpage: 'Landing page',
       survey: ['Créer les thématiques', 'Renseigner les thématiques', 'Exporter les données'],
-      annotation: 'Module à renseigner obligatoirement. Les champs * sont requis.'
+      annotation: 'Module à renseigner obligatoirement. Les champs * sont requis.',
+      themeNum: 'Thématique %{index}',
+      ph: {
+        title: 'Titre'
+      }
     },
     date: {
       format: 'D MMMM YYYY',
@@ -381,7 +385,11 @@ const Translations = {
       edition: 'Discussion',
       landingpage: 'Landing page',
       survey: ['Create themes', 'Edit themes', 'Export data'],
-      annotation: 'Module to be completed. * Fields are required.'
+      annotation: 'Module to be completed. * Fields are required.',
+      themeNum: 'Theme %{index}',
+      ph: {
+        title: 'Title'
+      }
     },
     date: {
       format: 'MMMM Do, YYYY',
