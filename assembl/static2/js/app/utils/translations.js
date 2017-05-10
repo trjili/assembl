@@ -192,7 +192,8 @@ const Translations = {
       themeNum: 'Thématique %{index}',
       ph: {
         title: 'Titre'
-      }
+      },
+      step_x_total: 'Etape %{num} sur %{total}'
     },
     date: {
       format: 'D MMMM YYYY',
@@ -389,7 +390,8 @@ const Translations = {
       themeNum: 'Theme %{index}',
       ph: {
         title: 'Title'
-      }
+      },
+      step_x_total: 'Step %{num} on %{total}'
     },
     date: {
       format: 'MMMM Do, YYYY',
