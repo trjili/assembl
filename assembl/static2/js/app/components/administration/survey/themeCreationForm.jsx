@@ -5,20 +5,20 @@ import { FormGroup, FormControl } from 'react-bootstrap';
 class ThemeCreationForm extends React.Component {
   constructor(props) {
     super(props);
-    // TO DO get it from the API + get available locales
-    const obj  = {
-      title: {
-        fr: '',
-        en: ''
-      }
+    const { translations } = this.props;
+    const obj = {
+      title: {}
     };
+    Object.keys(translations).forEach((key) => {
+      obj.title[key] = '';
+    });
     this.state = obj;
     this.getTitleValue = this.getTitleValue.bind(this);
   }
   getTitleValue(event) {
     const { selectedLocale } = this.props;
-    let val = event.target.value;
-    let obj  = this.state.title;
+    const val = event.target.value;
+    const obj = this.state.title;
     obj[selectedLocale] = val;
     this.setState(obj);
   }
