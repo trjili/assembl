@@ -5,10 +5,10 @@ import { FormGroup, FormControl } from 'react-bootstrap';
 class ThemeCreationForm extends React.Component {
   constructor(props) {
     super(props);
-    const { translations } = this.props;
     const obj = {
       title: {}
     };
+    const { translations } = this.props;
     Object.keys(translations).forEach((key) => {
       obj.title[key] = '';
     });
