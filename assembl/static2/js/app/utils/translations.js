@@ -141,6 +141,9 @@ const Translations = {
     synthesis: {
       title: 'synthèse'
     },
+    common: {
+      uploadButton: 'Choisissez un fichier'
+    },
     community: {
       panelTitle: 'Bienvenue dans la communauté d\'Assembl'
     },
@@ -343,6 +346,9 @@ const Translations = {
     },
     community: {
       panelTitle: 'Welcome to Assembl community page'
+    },
+    common: {
+      uploadButton: 'Choose a file to upload'
     },
     synthesis: {
       title: 'synthesis'
