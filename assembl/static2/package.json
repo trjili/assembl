@@ -9,6 +9,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "npm test -- --watch",
+    "coverage": "jest --coverage",
     "dev": "webpack -d --watch",
     "build": "webpack -p",
     "elint": "eslint . --ext .js --ext .jsx --cache || true",
