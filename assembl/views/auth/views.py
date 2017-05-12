@@ -85,7 +85,7 @@ def get_login_context(request, force_show_providers=False):
 
     return dict(get_default_context(request),
                 slug_prefix=p_slug,
-                providers=providers,
+                providers=json.dumps(providers),
                 saml_providers=request.registry.settings.get(
                     'SOCIAL_AUTH_SAML_ENABLED_IDPS', {}),
                 hide_registration=hide_registration,
@@ -317,7 +317,7 @@ def assembl_profile(request):
         dict(get_default_context(request),
              error='<br />'.join(errors),
              unverified_emails=unverified_emails,
-             providers=get_providers_with_names(),
+             providers=json.dumps(get_providers_with_names()),
              google_consumer_key=request.registry.settings.get(
                  'google.consumer_key', ''),
              the_user=profile,
