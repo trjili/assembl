@@ -168,7 +168,7 @@ const Translations = {
       },
       themes: 'Thèmes',
       notStarted: 'La phase %{phaseName} n\'a pas encore commencé. Merci de revenir à partir du ',
-      redirectToThreadPhase: 'Vous allez être redirigé vers la phase Idéation dans quelques secondes. Assembl est en cours d\'amélioration, veuillez nous excuser pour le changement d\'interface.'
+      redirectToThreadPhase: 'Vous allez être redirigé vers la phase %{phaseName} dans quelques secondes. Assembl est en cours d\'amélioration, veuillez nous excuser pour le changement d\'interface.'
     },
     profile: {
       panelTitle: 'Bienvenue dans la page profil d\'Assembl'
@@ -356,7 +356,7 @@ const Translations = {
       },
       themes: 'Themes',
       notStarted: 'The %{phaseName} phase is not started. Please come back from the ',
-      redirectToThreadPhase: 'You are going to be redirected to the Ideation phase in a few seconds. Assembl is being improved, please excuse us for the user interface change.'
+      redirectToThreadPhase: 'You are going to be redirected to the %{phaseName} phase in a few seconds. Assembl is being improved, please excuse us for the user interface change.'
     },
     profile: {
       panelTitle: 'Welcome to Assembl profile page'

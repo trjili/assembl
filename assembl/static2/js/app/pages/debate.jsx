@@ -10,6 +10,7 @@ import Timeline from '../components/debate/navigation/timeline';
 import Thumbnails from '../components/debate/navigation/thumbnails';
 import { get } from '../utils/routeMap';
 import { displayModal } from '../utils/utilityManager';
+import { getPhaseName } from '../utils/timeline';
 
 class Debate extends React.Component {
   constructor(props) {
@@ -34,9 +35,12 @@ class Debate extends React.Component {
     this.setState({ isThumbnailsHidden: !this.state.isThumbnailsHidden });
   }
   redirectToV1Threads() {
-    const body = <Translate value="debate.redirectToThreadPhase" />;
-    displayModal(null, body, true, null, null, true);
     const { debateData } = this.props.debate;
+    const { identifier } = this.props;
+    const locale = this.props.lang;
+    const phaseName = getPhaseName(debateData.timeline, identifier, locale);
+    const body = <Translate value="debate.redirectToThreadPhase" phaseName={phaseName} />;
+    displayModal(null, body, true, null, null, true);
     const slug = { slug: debateData.slug };
     const redirectionURL = get('oldDebate', slug);
     setTimeout(function(){
