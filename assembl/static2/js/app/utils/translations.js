@@ -200,7 +200,8 @@ const Translations = {
         title: 'Exporter les données du débat',
         annotation: 'Vous pouvez exporter l\'ensemble des données du débat en cliquant simplement sur le bouton Exporter',
         link: 'Exporter'
-      }
+      },
+      saveThemes: 'Sauvegarder'
     },
     date: {
       format: 'D MMMM YYYY',
@@ -406,7 +407,8 @@ const Translations = {
         title: 'Export the debate data',
         annotation: 'You can export all the debate data by clicking on the Export button',
         link: 'Export'
-      }
+      },
+      saveThemes: 'Save'
     },
     date: {
       format: 'MMMM Do, YYYY',
