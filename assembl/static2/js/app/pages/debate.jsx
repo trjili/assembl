@@ -8,6 +8,8 @@ import Loader from '../components/common/loader';
 import Themes from '../components/debate/common/themes';
 import Timeline from '../components/debate/navigation/timeline';
 import Thumbnails from '../components/debate/navigation/thumbnails';
+import { get } from '../utils/routeMap';
+import { displayModal } from '../utils/utilityManager';
 
 class Debate extends React.Component {
   constructor(props) {
@@ -18,6 +20,7 @@ class Debate extends React.Component {
     this.showThumbnails = this.showThumbnails.bind(this);
     this.hideThumbnails = this.hideThumbnails.bind(this);
     this.displayThumbnails = this.displayThumbnails.bind(this);
+    this.redirectToV1Threads = this.redirectToV1Threads.bind(this);
   }
   showThumbnails() {
     this.setState({ isThumbnailsHidden: false });
@@ -30,11 +33,27 @@ class Debate extends React.Component {
   displayThumbnails() {
     this.setState({ isThumbnailsHidden: !this.state.isThumbnailsHidden });
   }
+  redirectToV1Threads() {
+    const body = <Translate value="debate.redirectToThreadPhase" />;
+    displayModal(null, body, true, null, null, true);
+    const { debateData } = this.props.debate;
+    const slug = { slug: debateData.slug };
+    const redirectionURL = get('oldDebate', slug);
+    setTimeout(function(){
+      location.href = redirectionURL;
+    }, 6000);
+  }
   render() {
     const { loading, thematics } = this.props.data;
     const { identifier, isNavbarHidden } = this.props;
     const isParentRoute = !this.props.params.phase || false;
     const themeId = this.props.params.themeId || null;
+
+    if (isParentRoute && identifier == "thread") {
+      // This setTimeout avoids React error related to state change. Refactoring welcome.
+      setTimeout(this.redirectToV1Threads, 100);
+    }
+
     const children = React.Children.map(this.props.children, (child) => {
       return React.cloneElement(child, {
         id: themeId,
@@ -62,7 +81,7 @@ class Debate extends React.Component {
                 />
               </div>
             </section>
-            {isParentRoute &&
+            {isParentRoute && identifier != "thread" &&
               <Themes
                 thematics={thematics}
                 identifier={identifier}
@@ -117,6 +136,7 @@ const DebateWithData = graphql(ThematicQuery)(Debate);
 
 const mapStateToProps = (state) => {
   return {
+    debate: state.debate,
     lang: state.i18n.locale
   };
 };

@@ -16,16 +16,6 @@ class TimelineSegment extends React.Component {
     const { debateData } = this.props.debate;
     const slug = { slug: debateData.slug };
 
-    if ( phaseIdentifier == "thread" ){
-      const body = <div><Translate value="debate.redirectToThreadPhase" /></div>;
-      displayModal(null, body, true, null, null, true);
-      const redirectionURL = get('oldDebate', slug);
-      setTimeout(function(){
-        location.href = redirectionURL;
-      }, 6000);
-      return;
-    }
-
     if (isStepCompleted || isCurrentPhase) {
       browserHistory.push(`${get('debate', slug)}?phase=${phaseIdentifier}`);
     } else {
