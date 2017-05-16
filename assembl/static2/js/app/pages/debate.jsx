@@ -43,7 +43,7 @@ class Debate extends React.Component {
     displayModal(null, body, true, null, null, true);
     const slug = { slug: debateData.slug };
     const redirectionURL = get('oldDebate', slug);
-    setTimeout(function(){
+    setTimeout(() => {
       location.href = redirectionURL;
     }, 6000);
   }
@@ -55,17 +55,16 @@ class Debate extends React.Component {
     const isParentRoute = !this.props.params.phase || false;
     const themeId = this.props.params.themeId || null;
 
-    if (identifier && !isPhaseStarted(debateData.timeline, identifier)){
-      let that = this;
-      setTimeout(function(){
+    if (identifier && !isPhaseStarted(debateData.timeline, identifier)) {
+      const that = this;
+      setTimeout(() => {
         const locale = that.props.lang;
         const startDate = getStartDatePhase(debateData.timeline, identifier);
         const phaseName = getPhaseName(debateData.timeline, identifier, locale);
         const body = <div><Translate value="debate.notStarted" phaseName={phaseName} /><Localize value={startDate} dateFormat="date.format" /></div>;
         displayModal(null, body, true, null, null, true);
       }, 100);
-    }
-    else if (isParentRoute && identifier == "thread") {
+    } else if (isParentRoute && identifier === 'thread') {
       // This setTimeout avoids React error related to state change. Refactoring welcome.
       setTimeout(this.redirectToV1Threads, 100);
     }
@@ -97,7 +96,7 @@ class Debate extends React.Component {
                 />
               </div>
             </section>
-            {isParentRoute && identifier != "thread" &&
+            {isParentRoute && identifier !== 'thread' &&
               <Themes
                 thematics={thematics}
                 identifier={identifier}
