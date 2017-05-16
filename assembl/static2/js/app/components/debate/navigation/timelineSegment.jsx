@@ -1,10 +1,7 @@
 import React from 'react';
 import { browserHistory } from 'react-router';
-import { Translate, Localize } from 'react-redux-i18n';
 import { connect } from 'react-redux';
 import { get } from '../../../utils/routeMap';
-import { displayModal } from '../../../utils/utilityManager';
-import { getStartDatePhase, getPhaseName } from '../../../utils/timeline';
 
 class TimelineSegment extends React.Component {
   constructor(props) {
@@ -18,12 +15,6 @@ class TimelineSegment extends React.Component {
 
     if (isStepCompleted || isCurrentPhase) {
       browserHistory.push(`${get('debate', slug)}?phase=${phaseIdentifier}`);
-    } else {
-      const { locale } = this.props.i18n;
-      const startDate = getStartDatePhase(debateData.timeline, phaseIdentifier);
-      const phaseName = getPhaseName(debateData.timeline, phaseIdentifier, locale).toLowerCase();
-      const body = <div><Translate value="debate.notStarted" phaseName={phaseName} /><Localize value={startDate} dateFormat="date.format" /></div>;
-      displayModal(null, body, true, null, null, true);
     }
   }
   render() {

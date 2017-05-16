@@ -3,14 +3,14 @@ import { PropTypes } from 'prop-types';
 import { connect } from 'react-redux';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Translate } from 'react-redux-i18n';
+import { Translate, Localize } from 'react-redux-i18n';
 import Loader from '../components/common/loader';
 import Themes from '../components/debate/common/themes';
 import Timeline from '../components/debate/navigation/timeline';
 import Thumbnails from '../components/debate/navigation/thumbnails';
 import { get } from '../utils/routeMap';
 import { displayModal } from '../utils/utilityManager';
-import { getPhaseName } from '../utils/timeline';
+import { getPhaseName, isPhaseStarted, getStartDatePhase } from '../utils/timeline';
 
 class Debate extends React.Component {
   constructor(props) {
@@ -48,12 +48,24 @@ class Debate extends React.Component {
     }, 6000);
   }
   render() {
+    const { debateData } = this.props.debate;
+    const { identifier } = this.props; // identifier of current phase being accessed
     const { loading, thematics } = this.props.data;
-    const { identifier, isNavbarHidden } = this.props;
+    const { isNavbarHidden } = this.props;
     const isParentRoute = !this.props.params.phase || false;
     const themeId = this.props.params.themeId || null;
 
-    if (isParentRoute && identifier == "thread") {
+    if (identifier && !isPhaseStarted(debateData.timeline, identifier)){
+      let that = this;
+      setTimeout(function(){
+        const locale = that.props.lang;
+        const startDate = getStartDatePhase(debateData.timeline, identifier);
+        const phaseName = getPhaseName(debateData.timeline, identifier, locale);
+        const body = <div><Translate value="debate.notStarted" phaseName={phaseName} /><Localize value={startDate} dateFormat="date.format" /></div>;
+        displayModal(null, body, true, null, null, true);
+      }, 100);
+    }
+    else if (isParentRoute && identifier == "thread") {
       // This setTimeout avoids React error related to state change. Refactoring welcome.
       setTimeout(this.redirectToV1Threads, 100);
     }
