@@ -70,11 +70,18 @@ def sanitize_env():
         # so that a variable valued "False" in the .ini
         # file is recognized as boolean False
         setattr(env, name, as_bool(getattr(env, name, False)))
-    env.host_string = env.get('public_hostname', 'localhost')
+    public_hostname = env.public_hostname
+    assert public_hostname
     if not env.get('hosts', None):
-        env.hosts = env.get('public_hostname', 'localhost')
-    if not isinstance(env.hosts, list):
-        env.hosts = getattr(env, "hosts", "").split()
+        env.hosts = [public_hostname]
+    elif not isinstance(env.hosts, list):
+        env.hosts = env.hosts.split()
+    # Note: normally, fab would set host_string from hosts.
+    # But since we use the private name _hosts, and fallback
+    # at this stage within task execution, neither env.hosts
+    # nor env.host_string are set properly. Revisit with Fabric2.
+    if not env.get('host_string', None):
+        env.host_string = env.hosts[0]
 
 
 def load_rcfile_config():
@@ -1199,7 +1206,6 @@ def database_restore():
     Restores the database backed up on the remote server
     """
     assert(env.wsginame in ('staging.wsgi', 'dev.wsgi'))
-    env.debug = True
 
     if(env.wsginame != 'dev.wsgi'):
         execute(webservers_stop)
@@ -1640,9 +1646,8 @@ def env_dev(projectpath=None):
     env.hosts = ['localhost']
     execute(commonenv, projectpath, getenv('VIRTUAL_ENV', None))
     env.wsginame = "dev.wsgi"
-    env.urlhost = "localhost"
+    env.public_hostname = "localhost"
     # env.user = "webapp"
-    # env.home = "webapp"
     require('projectname', provided_by=('commonenv',))
 
     env.uses_apache = False
@@ -1667,7 +1672,7 @@ def env_testing(projectpath=None):
     env.hosts = ['localhost']
     execute(commonenv, projectpath, getenv('VIRTUAL_ENV', None))
     env.wsginame = "dev.wsgi"
-    env.urlhost = "localhost"
+    env.public_hostname = "localhost"
     require('projectname', provided_by=('commonenv',))
     env.uses_apache = False
     env.uses_ngnix = False
@@ -1683,9 +1688,8 @@ def env_coeus_assembl():
     env.ini_file = 'local.ini'
     env.hosts = ['coeus.ca']
     env.wsginame = "staging.wsgi"
-    env.urlhost = "assembl.coeus.ca"
+    env.public_hostname = "assembl.coeus.ca"
     env.user = "www-data"
-    env.home = "www-data"
     execute(commonenv, normpath("/var/www/assembl/"))
     require('projectname', provided_by=('commonenv',))
 
@@ -1705,9 +1709,8 @@ def env_coeus_assembl2():
     env.ini_file = 'local.ini'
     env.hosts = ['coeus.ca']
     env.wsginame = "staging.wsgi"
-    env.urlhost = "assembl2.coeus.ca"
+    env.public_hostname = "assembl2.coeus.ca"
     env.user = "www-data"
-    env.home = "www-data"
     execute(commonenv, normpath("/var/www/assembl2/"))
     require('projectname', provided_by=('commonenv',))
 
@@ -1727,9 +1730,8 @@ def env_dev_staging():
     env.ini_file = 'local.ini'
     env.hosts = ['dev-assembl.bluenove.com']
     env.wsginame = "staging.wsgi"
-    env.urlhost = "dev-assembl.bluenove.com"
+    env.public_hostname = "dev-assembl.bluenove.com"
     env.user = "assembl_user"
-    env.home = "assembl_user"
     execute(commonenv, normpath("/home/assembl_user/assembl"))
     require('projectname', provided_by=('commonenv',))
 
@@ -1750,9 +1752,8 @@ def env_inm_agora():
     env.ini_file = 'local.ini'
     env.hosts = ['discussions.bluenove.com']
     env.wsginame = "prod.wsgi"
-    env.urlhost = "agora.inm.qc.ca"
+    env.public_hostname = "agora.inm.qc.ca"
     env.user = "www-data"
-    env.home = "www-data"
     execute(commonenv, normpath("/home/assembl_user/assembl"))
     require('projectname', provided_by=('commonenv',))
 
@@ -1772,9 +1773,8 @@ def env_bluenove_discussions():
     env.ini_file = 'local.ini'
     env.hosts = ['discussions.bluenove.com']
     env.wsginame = "prod.wsgi"
-    env.urlhost = "discussions.bluenove.com"
+    env.public_hostname = "discussions.bluenove.com"
     env.user = "www-data"
-    env.home = "www-data"
     execute(commonenv, normpath("/home/www/assembl_discussions_bluenove_com/"))
     require('projectname', provided_by=('commonenv',))
 
@@ -1793,9 +1793,8 @@ def env_bluenove_enterprise():
     env.ini_file = 'local.ini'
     env.hosts = ['assembl-enterprise.bluenove.com']
     env.wsginame = "prod.wsgi"
-    env.urlhost = "assembl-enterprise.bluenove.com"
+    env.public_hostname = "assembl-enterprise.bluenove.com"
     env.user = "www-data"
-    env.home = "www-data"
     execute(commonenv, normpath("/home/www/assembl2_bluenove_com/"))
     require('projectname', provided_by=('commonenv',))
 
@@ -1814,9 +1813,8 @@ def env_bluenove_civic():
     env.ini_file = 'local.ini'
     env.hosts = ['assembl-civic.bluenove.com']
     env.wsginame = "prod.wsgi"
-    env.urlhost = "assembl-civic.bluenove.com"
+    env.public_hostname = "assembl-civic.bluenove.com"
     env.user = "assembl_agora2"
-    env.home = "assembl_agora2"
     execute(commonenv, normpath("/home/assembl_agora2/assembl/"))
     require('projectname', provided_by=('commonenv',))
 
@@ -1835,9 +1833,8 @@ def env_paris_debat():
     env.ini_file = 'local.ini'
     env.hosts = ['discussions.bluenove.com']
     env.wsginame = "prod.wsgi"
-    env.urlhost = "debat.paris.bluenove.com"
+    env.public_hostname = "debat.paris.bluenove.com"
     env.user = "www-data"
-    env.home = "www-data"
     execute(commonenv, normpath("/home/www/assembl_paris_fr/"))
     require('projectname', provided_by=('commonenv',))
 
@@ -1857,9 +1854,8 @@ def env_thecampfactory():
     env.ini_file = 'local.ini'
     env.hosts = ['assembl-enterprise.bluenove.com']
     env.wsginame = "prod.wsgi"
-    env.urlhost = "assembl.thecampfactory.fr"
+    env.public_hostname = "assembl.thecampfactory.fr"
     env.user = "www-data"
-    env.home = "www-data"
     execute(commonenv, normpath("/home/www/assembl_thecampfactory_fr/"))
     require('projectname', provided_by=('commonenv',))
 
@@ -1879,9 +1875,8 @@ def env_bel_bluenove():
     env.ini_file = 'local.ini'
     env.hosts = ['bel.bluenove.com']
     env.wsginame = "prod.wsgi"
-    env.urlhost = "bel.bluenove.com"
+    env.public_hostname = "bel.bluenove.com"
     env.user = "assembl_bel"
-    env.home = "assembl_bel-data"
     execute(commonenv, normpath("/home/assembl_bel/assembl/"))
     require('projectname', provided_by=('commonenv',))
 
