@@ -30,13 +30,13 @@ class ChangePassword extends React.Component {
     const that = this;
     postChangePassword(payload).then(() => {
       const slug = getDiscussionSlug();
-      let route, url;
+      let route,
+        url;
       if (slug) {
         route = `/${get('home', { slug: slug })}`;
         url = new URL(route, that.props.location.origin);
         window.location = url;
-      }
-      else {
+      } else {
         route = `/${get('root')}`;
         url = new URL(route, that.props.location.origin);
         window.location = url;

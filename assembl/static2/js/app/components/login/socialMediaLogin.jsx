@@ -8,8 +8,8 @@ const convertNameToCssClass = (name) => {
           .toLowerCase()
           .split(/\s+/)
           .filter(Boolean)
-          .join("_");
-  };
+          .join('_');
+};
 
 export class SocialMedia extends React.Component {
   render() {
