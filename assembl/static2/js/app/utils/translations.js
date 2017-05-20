@@ -187,6 +187,8 @@ const Translations = {
       panelTitle: 'Conditions Générales d\'Utilisations'
     },
     administration: {
+      videoModule: 'Option module vidéo',
+      thematic: 'Thématique',
       edition: 'Discussion',
       landingpage: 'Landing page',
       survey: ['Créer les thématiques', 'Renseigner les thématiques', 'Exporter les données'],
@@ -395,6 +397,8 @@ const Translations = {
       panelTitle: 'Terms and Conditions'
     },
     administration: {
+      videoModule: 'Video module',
+      thematic: 'Theme',
       edition: 'Discussion',
       landingpage: 'Landing page',
       survey: ['Create themes', 'Edit themes', 'Export data'],
