@@ -195,7 +195,9 @@ const Translations = {
       annotation: 'Module à renseigner obligatoirement. Les champs * sont requis.',
       themeNum: 'Thématique %{index}',
       ph: {
-        title: 'Titre'
+        title: 'Titre*',
+        quote: 'Citation',
+        videoLink: 'Lien vidéo*'
       },
       step_x_total: 'Etape %{num} sur %{total}',
       surveyExport: {
@@ -405,7 +407,9 @@ const Translations = {
       annotation: 'Module to be completed. * Fields are required.',
       themeNum: 'Theme %{index}',
       ph: {
-        title: 'Title'
+        title: 'Title*',
+        quote: 'Quote',
+        videoLink: 'Video link*'
       },
       step_x_total: 'Step %{num} on %{total}',
       surveyExport: {
